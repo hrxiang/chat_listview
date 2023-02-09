@@ -1,7 +1,7 @@
 name: chat_listview
 description: A new Flutter project.
 version: 0.0.1
-homepage:
+homepage: https://github.com/hrxiang/chat_listview
 
 environment:
   sdk: '>=2.18.4 <3.0.0'

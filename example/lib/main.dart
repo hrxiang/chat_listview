@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void insert() {
     setState(() {
-      topList.insert(0, '新消息');
+      topList.insert(0, '历史消息');
     });
   }
 
