@@ -1,5 +1,5 @@
 name: chat_listview
-description: A new Flutter project.
+description: Inserting data at the top or end will not cause the position of the listview to change.
 version: 0.0.1
 homepage: https://github.com/hrxiang/chat_listview
 
