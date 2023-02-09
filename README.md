@@ -1,4 +1,4 @@
-![image](https://github.com/hrxiang/chat_listview/images/a.gif)
+![image](https://github.com/hrxiang/chat_listview/blob/main/images/a.gif)
 
 1，第一次加载数据存入bottomList
 
