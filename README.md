@@ -1,3 +1,5 @@
+####一个可以从顶部或底部插入数据不引起位置改变的listview，用在聊天列表当查看历史消息或其他操作时新增消息而不会引起列表滚动。
+
 ![image](https://github.com/hrxiang/chat_listview/blob/main/images/img.png)
 ![image](https://github.com/hrxiang/chat_listview/blob/main/images/a.gif)
 
