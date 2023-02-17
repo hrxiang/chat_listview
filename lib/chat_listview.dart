@@ -28,13 +28,58 @@ extension ScrollControllerExt on ScrollController {
   }
 }
 
-class CustomChatListView<T> extends StatefulWidget {
+class CustomChatListViewController<E> {
+  /// 添加数据 insert(0,T) 或 insertAll(0,<T>[])
+  /// UI上index:length-1 -> 0
+  final _topList = <E>[];
+
+  /// 添加数据 add(T) 或 addAll(<T>[])
+  /// UI上index:0->length-1
+  final _bottomList = <E>[];
+
+  List<E> get topList => _topList;
+
+  List<E> get bottomList => _bottomList;
+
+  CustomChatListViewController(List<E> list) {
+    _bottomList.addAll(list);
+  }
+
+  void insertToTop(E data) {
+    _topList.insert(0, data);
+  }
+
+  void insertAllToTop(Iterable<E> iterable) {
+    _topList.insertAll(0, iterable);
+  }
+
+  void insertToBottom(E data) {
+    _bottomList.add(data);
+  }
+
+  void insertAllToBottom(Iterable<E> iterable) {
+    _bottomList.addAll(iterable);
+  }
+}
+
+/// [index] 在上下列表实际的index
+/// [position] 真个界面上的position
+/// [data] 数据
+typedef CustomChatListViewItemBuilder<T> = Widget Function(
+  BuildContext context,
+  int index,
+  int position,
+  T data,
+);
+
+class CustomChatListView extends StatefulWidget {
   const CustomChatListView({
     Key? key,
     required this.itemBuilder,
-    this.topList = const [],
-    this.bottomList = const [],
-    this.controller,
+    required this.controller,
+    // this.topList = const [],
+    // this.bottomList = const [],
+    this.scrollController,
     this.onScrollToTopLoad,
     this.onScrollToBottomLoad,
     this.enabledBottomLoad = false,
@@ -44,19 +89,20 @@ class CustomChatListView<T> extends StatefulWidget {
 
   /// index: topList/bottomList的下标
   /// position: 整个列表的下标
-  final Widget Function(BuildContext context, int index, int position, T data)
-      itemBuilder;
+  final CustomChatListViewItemBuilder itemBuilder;
 
   /// 添加数据 insert(0,T) 或 insertAll(0,<T>[])
   /// UI上index:length-1 -> 0
-  final List<T> topList;
+  // final List<T> topList;
 
   /// 添加数据 add(T) 或 addAll(<T>[])
   /// UI上index:0->length-1
-  final List<T> bottomList;
+  // final List<T> bottomList;
+
+  final CustomChatListViewController controller;
 
   ///
-  final ScrollController? controller;
+  final ScrollController? scrollController;
 
   /// 滚动到顶部加载，返回ture：还存在未加载完的数据。false：已经没有更多的数据了
   final Future<bool> Function()? onScrollToTopLoad;
@@ -85,7 +131,7 @@ class _ChatListViewState extends State<CustomChatListView> {
 
   @override
   void initState() {
-    widget.controller?.addListener(() {
+    widget.scrollController?.addListener(() {
       if (widget.enabledBottomLoad && _isBottom && _bottomHasMore) {
         log('-------------ChatListView scroll to bottom');
         _onScrollToBottomLoadMore();
@@ -98,10 +144,12 @@ class _ChatListViewState extends State<CustomChatListView> {
   }
 
   bool get _isBottom =>
-      widget.controller!.offset == widget.controller!.position.maxScrollExtent;
+      widget.scrollController!.offset ==
+      widget.scrollController!.position.maxScrollExtent;
 
   bool get _isTop =>
-      widget.controller!.offset == widget.controller!.position.minScrollExtent;
+      widget.scrollController!.offset ==
+      widget.scrollController!.position.minScrollExtent;
 
   void _onScrollToBottomLoadMore() {
     widget.onScrollToBottomLoad?.call().then((hasMore) {
@@ -133,7 +181,7 @@ class _ChatListViewState extends State<CustomChatListView> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       center: centerKey,
-      controller: widget.controller,
+      controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       // reverse: true,
       // shrinkWrap: false,
@@ -146,25 +194,25 @@ class _ChatListViewState extends State<CustomChatListView> {
               return widget.itemBuilder(
                 context,
                 index,
-                widget.topList.length - index - 1,
-                widget.topList.elementAt(index),
+                widget.controller.topList.length - index - 1,
+                widget.controller.topList.elementAt(index),
               );
             },
-            childCount: widget.topList.length,
+            childCount: widget.controller.topList.length,
           ),
         ),
         SliverList(
           key: centerKey,
           delegate: SliverChildBuilderDelegate(
-            (_, index) {
+                (_, index) {
               return widget.itemBuilder(
                 context,
                 index,
-                widget.topList.length + index,
-                widget.bottomList.elementAt(index),
+                widget.controller.topList.length + index,
+                widget.controller.bottomList.elementAt(index),
               );
             },
-            childCount: widget.bottomList.length,
+            childCount: widget.controller.bottomList.length,
           ),
         ),
         if (_bottomHasMore && widget.enabledBottomLoad)

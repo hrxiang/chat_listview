@@ -5,40 +5,40 @@
 ![image](https://github.com/hrxiang/chat_listview/blob/main/images/img.png)
 ![image](https://github.com/hrxiang/chat_listview/blob/main/images/a.gif)
 
-1，第一次加载数据存入bottomList
+1，创建CustomChatListViewController实例： controller
 
 ```
-    bottomList.addAll(_buildNewMessage());
+    controller = CustomChatListViewController([]);
 ```
 
-2，新收到消息add
+2，向顶部插入数据
 
 ```
-    bottomList.add('新消息');
+   controller.insertToTop('历史消息');
 ```
 
-3，历史消息insert
+3，向底部插入数据
 
 ```
-    topList.insert(0, '历史消息');
+   controller.insertToBottom('新消息');
 ```
 
 4，滚动到底部
 
 ```
-    controller.scrollToBottom();
+   scrollController.scrollToBottom();
 ```
 
 5，滚动到顶部
 
 ```
-  controller.scrollToTop();
+   scrollController.scrollToTop();
 ```
 
 6，滚动到指定index，配合"scroll_to_index"库一起使用
 
 ```
-  controller.scrollToIndex(
+  scrollController.scrollToIndex(
       position,
       duration: const Duration(milliseconds: 1),
       preferPosition: AutoScrollPosition.begin,
@@ -50,8 +50,8 @@
 ```
   Future<bool> onScrollToTopLoad() async {
     await Future.delayed(const Duration(seconds: 2));
-    topList.insertAll(0, _buildHistoryMessage());
-    return topList.length <= totalLength;
+    controller.insertAllToTop(_buildHistoryMessage());
+    return controller.topList.length <= 88;
   }
 ```
 
@@ -60,7 +60,7 @@
 ```
   Future<bool> onScrollToBottomLoad() async {
     await Future.delayed(const Duration(seconds: 2));
-    bottomList.addAll(_buildNewMessage());
-    return bottomList.length <= totalLength;
+    controller.insertAllToBottom(_buildNewMessage());
+    return controller.bottomList.length <= 88;
   }
 ```

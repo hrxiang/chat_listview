@@ -50,40 +50,47 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final topList = <String>[];
-  final bottomList = <String>[];
+  // final topList = <String>[];
+  // final bottomList = <String>[];
 
   // final controller = ScrollController();
-  final controller = AutoScrollController();
+  final scrollController = AutoScrollController();
+  late CustomChatListViewController<String> controller;
 
   @override
   void initState() {
-    bottomList.addAll(_buildNewMessage());
+    controller = CustomChatListViewController(_buildNewMessage());
+    // bottomList.addAll(_buildNewMessage());
     super.initState();
   }
 
   void insert() {
     setState(() {
-      topList.insert(0, '历史消息');
+      controller.insertToTop('历史消息');
+      // topList.insert(0, '历史消息');
     });
   }
 
   void add() {
     setState(() {
-      bottomList.add('新消息');
+      controller.insertToBottom('新消息');
+      // bottomList.add('新消息');
     });
   }
 
+  /// 新数据不超过88条
   Future<bool> onScrollToBottomLoad() async {
     await Future.delayed(const Duration(seconds: 2));
-    bottomList.addAll(_buildNewMessage());
-    return bottomList.length <= 88;
+    controller.insertAllToBottom(_buildNewMessage());
+    // bottomList.addAll(_buildNewMessage());
+    return controller.bottomList.length <= 88;
   }
 
   Future<bool> onScrollToTopLoad() async {
     await Future.delayed(const Duration(seconds: 2));
-    topList.insertAll(0, _buildHistoryMessage());
-    return topList.length <= 88;
+    controller.insertAllToTop(_buildHistoryMessage());
+    // topList.insertAll(0, _buildHistoryMessage());
+    return controller.topList.length <= 88;
   }
 
   _buildNewMessage() {
@@ -103,15 +110,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void jumpToTop() {
-    controller.scrollToTop();
+    scrollController.scrollToTop();
   }
 
   void jumpToBottom() {
-    controller.scrollToBottom();
+    scrollController.scrollToBottom();
   }
 
   void autoJumpToIndex() {
-    controller.scrollToIndex(
+    scrollController.scrollToIndex(
       10,
       duration: const Duration(milliseconds: 1),
       preferPosition: AutoScrollPosition.begin,
@@ -129,36 +136,37 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               ElevatedButton(
                 onPressed: jumpToTop,
-                child: Text('跳到顶部'),
+                child: const Text('跳到顶部'),
               ),
               ElevatedButton(
                 onPressed: jumpToBottom,
-                child: Text('跳到底部'),
+                child: const Text('跳到底部'),
               ),
               ElevatedButton(
                 onPressed: autoJumpToIndex,
-                child: Text('跳到 10'),
+                child: const Text('跳到position:10'),
               ),
             ],
           ),
           Expanded(
-            child: CustomChatListView<String>(
-              itemBuilder: (_, index, position, dynamic data) {
+            child: CustomChatListView(
+              itemBuilder: <String>(_, index, position, String data) {
                 return AutoScrollTag(
                   key: ValueKey(position),
-                  controller: controller,
+                  controller: scrollController,
                   index: position,
                   child: Container(
                     height: 50,
                     alignment: Alignment.center,
-                    child: Text('$data index:$index  position:$position'),
+                    child: Text('$data index:$index----------------$position'),
                   ),
                 );
               },
-              topList: topList,
-              bottomList: bottomList,
-              controller: controller,
+              // topList: topList,
+              // bottomList: bottomList,
+              scrollController: scrollController,
               enabledBottomLoad: true,
+              controller: controller,
               enabledTopLoad: true,
               onScrollToBottomLoad: onScrollToBottomLoad,
               onScrollToTopLoad: onScrollToTopLoad,
@@ -171,13 +179,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   insert();
                 },
-                child: Text('顶部插入数据'),
+                child: const Text('顶部插入数据'),
               ),
               ElevatedButton(
                 onPressed: () {
                   add();
                 },
-                child: Text('底部插入数据'),
+                child: const Text('底部插入数据'),
               ),
             ],
           )
