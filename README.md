@@ -51,7 +51,7 @@
   Future<bool> onScrollToTopLoad() async {
     await Future.delayed(const Duration(seconds: 2));
     controller.insertAllToTop(_buildHistoryMessage());
-    return controller.topList.length <= 88;
+    return controller.topHasMore(max: 88);
   }
 ```
 
@@ -61,6 +61,6 @@
   Future<bool> onScrollToBottomLoad() async {
     await Future.delayed(const Duration(seconds: 2));
     controller.insertAllToBottom(_buildNewMessage());
-    return controller.bottomList.length <= 88;
+    return controller.bottomHasMore(max: 88);
   }
 ```

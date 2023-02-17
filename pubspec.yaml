@@ -1,6 +1,6 @@
 name: chat_listview
 description: Inserting data at the top or end will not cause the position of the listview to change.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/hrxiang/chat_listview
 
 environment:

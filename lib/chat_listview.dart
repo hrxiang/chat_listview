@@ -1,7 +1,5 @@
 library chat_listview;
 
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -41,6 +39,10 @@ class CustomChatListViewController<E> {
 
   List<E> get bottomList => _bottomList;
 
+  List<E> get list => _topList + _bottomList;
+
+  int get length => list.length;
+
   CustomChatListViewController(List<E> list) {
     _bottomList.addAll(list);
   }
@@ -60,6 +62,18 @@ class CustomChatListViewController<E> {
   void insertAllToBottom(Iterable<E> iterable) {
     _bottomList.addAll(iterable);
   }
+
+  /// [position] 使用 [CustomChatListViewItemBuilder]的position
+  E elementAt(int position) => list.elementAt(position);
+
+  /// [position] 使用 [CustomChatListViewItemBuilder]的position
+  E removeAt(int position) => list.removeAt(position);
+
+  /// max = pageNo * pageSize
+  bool bottomHasMore({required int max}) => _bottomList.length < max;
+
+  /// max = pageNo * pageSize
+  bool topHasMore({required int max}) => _topList.length < max;
 }
 
 /// [index] 在上下列表实际的index
@@ -133,11 +147,9 @@ class _ChatListViewState extends State<CustomChatListView> {
   void initState() {
     widget.scrollController?.addListener(() {
       if (widget.enabledBottomLoad && _isBottom && _bottomHasMore) {
-        log('-------------ChatListView scroll to bottom');
         _onScrollToBottomLoadMore();
       } else if (widget.enabledTopLoad && _isTop && _topHasMore) {
         _onScrollToTopLoadMore();
-        log('-------------ChatListView scroll to top');
       }
     });
     super.initState();
@@ -204,7 +216,7 @@ class _ChatListViewState extends State<CustomChatListView> {
         SliverList(
           key: centerKey,
           delegate: SliverChildBuilderDelegate(
-                (_, index) {
+            (_, index) {
               return widget.itemBuilder(
                 context,
                 index,

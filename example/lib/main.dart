@@ -83,14 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(const Duration(seconds: 2));
     controller.insertAllToBottom(_buildNewMessage());
     // bottomList.addAll(_buildNewMessage());
-    return controller.bottomList.length <= 88;
+    return controller.bottomHasMore(max: 88);
   }
 
   Future<bool> onScrollToTopLoad() async {
     await Future.delayed(const Duration(seconds: 2));
     controller.insertAllToTop(_buildHistoryMessage());
     // topList.insertAll(0, _buildHistoryMessage());
-    return controller.topList.length <= 88;
+    return controller.topHasMore(max: 88);
   }
 
   _buildNewMessage() {
