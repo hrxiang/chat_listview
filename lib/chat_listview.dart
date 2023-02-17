@@ -69,6 +69,8 @@ class CustomChatListViewController<E> {
   /// [position] 使用 [CustomChatListViewItemBuilder]的position
   E removeAt(int position) => list.removeAt(position);
 
+  bool remove(Object? value) => list.remove(value);
+
   /// max = pageNo * pageSize
   bool bottomHasMore({required int max}) => _bottomList.length < max;
 
