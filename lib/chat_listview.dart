@@ -88,14 +88,14 @@ typedef CustomChatListViewItemBuilder<T> = Widget Function(
   T data,
 );
 
+///
 class CustomChatListView extends StatefulWidget {
   const CustomChatListView({
     Key? key,
     required this.itemBuilder,
     required this.controller,
-    // this.topList = const [],
-    // this.bottomList = const [],
     this.scrollController,
+    this.onInitLoad,
     this.onScrollToTopLoad,
     this.onScrollToBottomLoad,
     this.enabledBottomLoad = false,
@@ -126,6 +126,9 @@ class CustomChatListView extends StatefulWidget {
   /// 滚动到底部加载，返回ture：还存在未加载完的数据。false：已经没有更多的数据了
   final Future<bool> Function()? onScrollToBottomLoad;
 
+  /// 初始化
+  final Future<bool> Function()? onInitLoad;
+
   /// 启用顶部加载
   final bool enabledTopLoad;
 
@@ -147,6 +150,7 @@ class _ChatListViewState extends State<CustomChatListView> {
 
   @override
   void initState() {
+    _onInitLoad();
     widget.scrollController?.addListener(() {
       if (widget.enabledBottomLoad && _isBottom && _bottomHasMore) {
         _onScrollToBottomLoadMore();
@@ -164,6 +168,15 @@ class _ChatListViewState extends State<CustomChatListView> {
   bool get _isTop =>
       widget.scrollController!.offset ==
       widget.scrollController!.position.minScrollExtent;
+
+  void _onInitLoad() {
+    widget.onInitLoad?.call().then((hasMore) {
+      if (!mounted) return;
+      setState(() {
+        _topHasMore = hasMore;
+      });
+    });
+  }
 
   void _onScrollToBottomLoadMore() {
     widget.onScrollToBottomLoad?.call().then((hasMore) {
@@ -209,7 +222,8 @@ class _ChatListViewState extends State<CustomChatListView> {
                 context,
                 index,
                 widget.controller.topList.length - index - 1,
-                widget.controller.topList.elementAt(index),
+                widget.controller.topList
+                    .elementAt(widget.controller.topList.length - 1 - index),
               );
             },
             childCount: widget.controller.topList.length,

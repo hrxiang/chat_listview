@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    controller = CustomChatListViewController(_buildNewMessage());
+    controller = CustomChatListViewController([]);
     // bottomList.addAll(_buildNewMessage());
     super.initState();
   }
@@ -165,9 +165,9 @@ class _MyHomePageState extends State<MyHomePage> {
               // topList: topList,
               // bottomList: bottomList,
               scrollController: scrollController,
-              enabledBottomLoad: true,
+              enabledBottomLoad: false,
               controller: controller,
-              enabledTopLoad: true,
+              enabledTopLoad: false,
               onScrollToBottomLoad: onScrollToBottomLoad,
               onScrollToTopLoad: onScrollToTopLoad,
             ),
